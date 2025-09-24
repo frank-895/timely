@@ -6,7 +6,8 @@ struct timelyApp: App {
         MenuBarExtra("timely", systemImage: "characters.uppercase"
         ) {
             ContentView()
-                .frame(width: 500, height: 200)
+                .frame(width: 500)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .menuBarExtraStyle(.window)
     }
