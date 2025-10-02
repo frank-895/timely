@@ -15,6 +15,17 @@ class TimeConverterViewModel: ObservableObject {
     let validationManager = InputValidationManager()
     
     // Input states for validation
+    lazy var timeInput: InputFieldState = {
+        validationManager.registerInput(
+            id: "time",
+            defaultValue: "12:00",
+            validationRule: { value in
+                // Time validation: must be in HH:mm format (24-hour)
+                return Self.isValidTimeFormat(value)
+            }
+        )
+    }()
+    
     lazy var location1Input: InputFieldState = {
         validationManager.registerInput(
             id: "location1", 
@@ -105,6 +116,14 @@ class TimeConverterViewModel: ObservableObject {
                     self.location2Input.needsValidation = false
                 }
             }
+            
+            // Initialize the time input with default value
+            _ = self.timeInput
+            DispatchQueue.main.async {
+                self.timeInput.currentValue = "12:00"
+                self.timeInput.lastValid = "12:00"
+                self.timeInput.needsValidation = false
+            }
 
         } catch {
             // Failed to load cities - will use empty array
@@ -175,6 +194,75 @@ class TimeConverterViewModel: ObservableObject {
                 self?.filteredLocations2 = locations
             }
             .store(in: &cancellables)
+    }
+    
+    /// Validates time format: accepts formats like "9:30", "09:30", "21:45"
+    /// Normalizes to HH:mm format and validates hours (00-23) and minutes (00-59)
+    static func isValidTimeFormat(_ timeString: String) -> Bool {
+        let trimmed = timeString.trimmingCharacters(in: .whitespaces)
+        
+        // Must be in H:mm or HH:mm format for validation to pass
+        guard let match = trimmed.firstMatch(of: /^(\d{1,2}):(\d{2})$/) else {
+            return false
+        }
+        
+        let hours = Int(match.1) ?? -1
+        let minutes = Int(match.2) ?? -1
+        
+        // Validate ranges
+        return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59
+    }
+    
+    /// Normalizes time string to HH:mm format (e.g., "9:30" -> "09:30")
+    /// Only accepts complete, valid time formats for normalization
+    static func normalizeTimeFormat(_ timeString: String) -> String? {
+        let trimmed = timeString.trimmingCharacters(in: .whitespaces)
+        
+        // Full format: H:mm or HH:mm
+        if let match = trimmed.firstMatch(of: /^(\d{1,2}):(\d{2})$/) {
+            let hours = Int(match.1) ?? -1
+            let minutes = Int(match.2) ?? -1
+            
+            guard hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59 else {
+                return nil
+            }
+            
+            return String(format: "%02d:%02d", hours, minutes)
+        }
+        
+        // Raw digits format: "930" -> "09:30", "1230" -> "12:30"
+        if let formatted = formatRawTimeDigits(trimmed) {
+            return formatted
+        }
+        
+        return nil
+    }
+    
+    /// Formats raw time digits like "930" -> "09:30" or "1230" -> "12:30"
+    private static func formatRawTimeDigits(_ digits: String) -> String? {
+        guard digits.count == 3 || digits.count == 4,
+              let _ = Int(digits) else {
+            return nil
+        }
+        
+        let hours: Int
+        let minutes: Int
+        
+        if digits.count == 3 {
+            // Format: HMM -> H:MM
+            hours = Int(String(digits.prefix(1))) ?? -1
+            minutes = Int(String(digits.suffix(2))) ?? -1
+        } else {
+            // Format: HHMM -> HH:MM
+            hours = Int(String(digits.prefix(2))) ?? -1
+            minutes = Int(String(digits.suffix(2))) ?? -1
+        }
+        
+        guard hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59 else {
+            return nil
+        }
+        
+        return String(format: "%02d:%02d", hours, minutes)
     }
 }
 
