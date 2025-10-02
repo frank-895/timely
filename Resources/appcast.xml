@@ -13,7 +13,7 @@
     <item>
       <title>v1.1</title>
       <sparkle:releaseNotesLink>
-        https://github.com/yourusername/timely/releases/tag/v1.1
+        https://github.com/frank-895/timely/releases/tag/v1.1
       </sparkle:releaseNotesLink>
       <enclosure
         url="https://github.com/frank-895/timely/releases/download/v1.1/timely.zip"
@@ -21,6 +21,13 @@
         type="application/octet-stream"/>
     </item>
 
+    <item>
+      <title>v1.2</title>
+      <sparkle:releaseNotesLink>https://github.com/frank-895/timely/releases/tag/v1.2</sparkle:releaseNotesLink>
+      <enclosure url="https://github.com/frank-895/timely/releases/download/v1.2/timely.zip"
+                 sparkle:version="1.2"
+                 type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
 

@@ -99,12 +99,10 @@ class InputValidationManager: ObservableObject {
     
     /// Handle when a field loses focus
     private func handleFieldLostFocus(_ id: String) {
-        print("🟠 Field \(id) lost focus")
         
         // Clear focus tracking for this field
         if focusedFieldId == id {
             focusedFieldId = nil
-            print("🟠 Cleared focusedFieldId")
         }
         
         // Always validate and commit when a field loses focus
@@ -115,11 +113,9 @@ class InputValidationManager: ObservableObject {
     private func validateAndCommitField(_ id: String) {
         guard let inputState = inputStates[id] else { return }
         
-        print("🟡 Validating field \(id): '\(inputState.currentValue)' (needsValidation: \(inputState.needsValidation))")
         
         guard inputState.needsValidation else { 
-            print("🟡 Field \(id) doesn't need validation, skipping")
-            return 
+            return
         }
         
         let currentValue = inputState.currentValue
@@ -129,11 +125,9 @@ class InputValidationManager: ObservableObject {
             
             if self.isValid(currentValue, for: id) {
                 // Valid: commit to lastValid
-                print("🟢 Field \(id) is valid, committing: '\(currentValue)'")
                 inputState.lastValid = currentValue
             } else {
                 // Invalid: revert to lastValid
-                print("🔴 Field \(id) is invalid, reverting to: '\(inputState.lastValid)'")
                 inputState.currentValue = inputState.lastValid
             }
             

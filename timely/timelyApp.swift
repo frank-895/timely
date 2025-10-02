@@ -10,17 +10,21 @@ struct timelyApp: App {
         userDriverDelegate: nil
     )
 
+    // Track whether the menu bar extra is inserted
+    @State private var isMenuBarExtraInserted = true
+
     var body: some Scene {
-        MenuBarExtra {
+        MenuBarExtra(isInserted: $isMenuBarExtraInserted) {
             ContentView()
                 .frame(width: 500)
                 .fixedSize(horizontal: false, vertical: true)
         } label: {
-            // Use NSImage if available, else system clock
-            Image(nsImage: NSImage(named: "MenuIcon") ?? NSImage(systemSymbolName: "clock", accessibilityDescription: nil)!)
-                .resizable()
-                .frame(width: 16, height: 16)
+            Image("MenuIcon")
+                .renderingMode(.template)     // let macOS tint + size it
+                .imageScale(.small)           // force proper menu bar scale
+                .font(.system(size: 14))      // an extra clamp (optional)
         }
         .menuBarExtraStyle(.window)
+
     }
 }
