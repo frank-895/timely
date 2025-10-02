@@ -11,7 +11,10 @@ class InputFieldState: ObservableObject {
         didSet {
             // Only mark validation needed if value actually changed and we're not initializing
             if oldValue != currentValue && !oldValue.isEmpty {
-                needsValidation = true
+                // Defer the validation flag update to avoid publishing during view updates
+                DispatchQueue.main.async { [weak self] in
+                    self?.needsValidation = true
+                }
             }
         }
     }
@@ -28,7 +31,9 @@ class InputFieldState: ObservableObject {
     
     /// Reset validation flag (used by manager when validation is complete)
     func markValidated() {
-        needsValidation = false
+        DispatchQueue.main.async { [weak self] in
+            self?.needsValidation = false
+        }
     }
 }
 
@@ -119,17 +124,21 @@ class InputValidationManager: ObservableObject {
         
         let currentValue = inputState.currentValue
         
-        if isValid(currentValue, for: id) {
-            // Valid: commit to lastValid
-            print("🟢 Field \(id) is valid, committing: '\(currentValue)'")
-            inputState.lastValid = currentValue
-        } else {
-            // Invalid: revert to lastValid
-            print("🔴 Field \(id) is invalid, reverting to: '\(inputState.lastValid)'")
-            inputState.currentValue = inputState.lastValid
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            if self.isValid(currentValue, for: id) {
+                // Valid: commit to lastValid
+                print("🟢 Field \(id) is valid, committing: '\(currentValue)'")
+                inputState.lastValid = currentValue
+            } else {
+                // Invalid: revert to lastValid
+                print("🔴 Field \(id) is invalid, reverting to: '\(inputState.lastValid)'")
+                inputState.currentValue = inputState.lastValid
+            }
+            
+            inputState.needsValidation = false
         }
-        
-        inputState.markValidated()
     }
     
     /// Validate a value for a specific input type
@@ -201,7 +210,7 @@ class InputValidationManager: ObservableObject {
             } else {
                 inputState.currentValue = inputState.lastValid
             }
-            inputState.markValidated()
+            inputState.needsValidation = false
         }
     }
     
@@ -210,21 +219,27 @@ class InputValidationManager: ObservableObject {
     func setFieldValue(_ id: String, to value: String) {
         guard let inputState = inputStates[id] else { return }
         
-        // Set both current and lastValid for programmatic updates
-        inputState.currentValue = value
-        inputState.lastValid = value
-        inputState.markValidated()
+        DispatchQueue.main.async {
+            // Set both current and lastValid for programmatic updates
+            inputState.currentValue = value
+            inputState.lastValid = value
+            inputState.needsValidation = false
+        }
     }
     
     /// Force validate all fields (useful for form submission)
     func validateAllFields() {
-        for (id, inputState) in inputStates {
-            if !isValid(inputState.currentValue, for: id) {
-                inputState.currentValue = inputState.lastValid
-            } else {
-                inputState.lastValid = inputState.currentValue
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            for (id, inputState) in self.inputStates {
+                if !self.isValid(inputState.currentValue, for: id) {
+                    inputState.currentValue = inputState.lastValid
+                } else {
+                    inputState.lastValid = inputState.currentValue
+                }
+                inputState.needsValidation = false
             }
-            inputState.markValidated()
         }
     }
 }

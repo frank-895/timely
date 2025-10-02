@@ -84,22 +84,26 @@ class TimeConverterViewModel: ObservableObject {
                 self.selectedLocation1 = defaultLocation1
                 let defaultText1 = "\(defaultLocation1.name), \(defaultLocation1.country)"
                 
-                // Set the default value directly on the input state
+                // Set the default value directly on the input state with async dispatch
                 _ = self.location1Input
-                self.location1Input.currentValue = defaultText1
-                self.location1Input.lastValid = defaultText1
-                self.location1Input.markValidated()
+                DispatchQueue.main.async {
+                    self.location1Input.currentValue = defaultText1
+                    self.location1Input.lastValid = defaultText1
+                    self.location1Input.needsValidation = false
+                }
             }
             
             if let defaultLocation2 = locations.first(where: { $0.name.lowercased().contains("london") }) ?? locations.dropFirst().first {
                 self.selectedLocation2 = defaultLocation2
                 let defaultText2 = "\(defaultLocation2.name), \(defaultLocation2.country)"
                 
-                // Set the default value directly on the input state
+                // Set the default value directly on the input state with async dispatch
                 _ = self.location2Input
-                self.location2Input.currentValue = defaultText2
-                self.location2Input.lastValid = defaultText2
-                self.location2Input.markValidated()
+                DispatchQueue.main.async {
+                    self.location2Input.currentValue = defaultText2
+                    self.location2Input.lastValid = defaultText2
+                    self.location2Input.needsValidation = false
+                }
             }
 
         } catch {
@@ -142,7 +146,10 @@ class TimeConverterViewModel: ObservableObject {
                     .prefix(self.maxResults)
                     .map { $0 }
             }
-            .assign(to: \.filteredLocations1, on: self)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] locations in
+                self?.filteredLocations1 = locations
+            }
             .store(in: &cancellables)
 
         // Picker 2
@@ -163,7 +170,10 @@ class TimeConverterViewModel: ObservableObject {
                     .prefix(self.maxResults)
                     .map { $0 }
             }
-            .assign(to: \.filteredLocations2, on: self)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] locations in
+                self?.filteredLocations2 = locations
+            }
             .store(in: &cancellables)
     }
 }

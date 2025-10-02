@@ -48,8 +48,11 @@ struct ValidatedCityPickerView: View {
                           !isValidCompleteSelection() && 
                           isTextFieldFocused
         
-        isExpanded = shouldExpand
-        selectedIndex = 0
+        // Defer state updates to avoid publishing during view updates
+        DispatchQueue.main.async {
+            isExpanded = shouldExpand
+            selectedIndex = 0
+        }
     }
     
     private func isValidCompleteSelection() -> Bool {
@@ -147,15 +150,19 @@ struct ValidatedCityPickerView: View {
     }
     
     private func selectCity(_ city: Location) {
+        // First, update the selectedLocation binding
         selectedLocation = city
         let cityText = "\(city.name), \(city.country)"
         
         // Use validation manager's proper method for programmatic updates
         validationManager.setFieldValue(inputState.id, to: cityText)
         
-        isExpanded = false
-        selectedIndex = 0
-        isTextFieldFocused = false
+        // Defer UI state changes to avoid publishing during view updates
+        DispatchQueue.main.async {
+            isExpanded = false
+            selectedIndex = 0
+            isTextFieldFocused = false
+        }
         
         onLocationSelected?(city)
     }
@@ -179,9 +186,11 @@ struct ValidatedCityPickerView: View {
             }
             return .handled
         case .escape:
-            isExpanded = false
-            selectedIndex = 0
-            isTextFieldFocused = false
+            DispatchQueue.main.async {
+                isExpanded = false
+                selectedIndex = 0
+                isTextFieldFocused = false
+            }
             return .handled
         default:
             return .ignored
