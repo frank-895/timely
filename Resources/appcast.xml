@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"
+     xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>timely updates</title>
+    <item>
+      <title>v1.0</title>
+      <sparkle:releaseNotesLink>https://github.com/yourusername/timely/releases/tag/v1.0</sparkle:releaseNotesLink>
+      <enclosure url="https://github.com/frank-895/timely/releases/download/v1.0/timely.zip"
+                 sparkle:version="1.0"
+                 type="application/octet-stream"/>
+    </item>
+  </channel>
+</rss>
+
