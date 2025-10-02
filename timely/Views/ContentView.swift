@@ -13,17 +13,27 @@ struct ContentView: View {
             }
 
             HStack(alignment: .top, spacing: 40) {
-                CityPickerView(
+                ValidatedCityPickerView(
                     selectedLocation: $viewModel.selectedLocation1,
-                    searchQuery: $viewModel.searchQuery1,
-                    filteredLocations: viewModel.filteredLocations1
+                    inputState: viewModel.location1Input,
+                    filteredLocations: viewModel.filteredLocations1,
+                    validationManager: viewModel.validationManager,
+                    onLocationSelected: { location in
+                        // Update the selected location when a city is picked
+                        viewModel.selectedLocation1 = location
+                    }
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                CityPickerView(
+                ValidatedCityPickerView(
                     selectedLocation: $viewModel.selectedLocation2,
-                    searchQuery: $viewModel.searchQuery2,
-                    filteredLocations: viewModel.filteredLocations2
+                    inputState: viewModel.location2Input,
+                    filteredLocations: viewModel.filteredLocations2,
+                    validationManager: viewModel.validationManager,
+                    onLocationSelected: { location in
+                        // Update the selected location when a city is picked
+                        viewModel.selectedLocation2 = location
+                    }
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
