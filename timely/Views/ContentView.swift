@@ -2,20 +2,16 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = TimeConverterViewModel()
+    @State private var isLicenseHovered = false
+    @State private var isGitHubHovered = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
                 Text("timely")
                     .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [Color.blue.opacity(0.9), Color.blue.opacity(0.6)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .shadow(color: Color.blue.opacity(0.3), radius: 2, x: 1, y: 1)
+                    .fontWeight(.heavy)
+                    .foregroundColor(.blue)
                 
                 Spacer()
                 
@@ -39,6 +35,8 @@ struct ContentView: View {
                             NSCursor.arrow.set()
                         }
                     }
+                    .scaleEffect(1.0)
+                    .animation(.easeInOut(duration: 0.1), value: false)
 
                     Button(action: {
                         if let url = URL(string: "https://github.com/frank-895/timely") {
@@ -48,6 +46,7 @@ struct ContentView: View {
                         Image("github")
                             .resizable()
                             .frame(width: 16, height: 16)
+                            .foregroundColor(.secondary)
                     }
                     .buttonStyle(.plain)
                     .help("View on GitHub")
@@ -58,6 +57,8 @@ struct ContentView: View {
                             NSCursor.arrow.set()
                         }
                     }
+                    .scaleEffect(1.0)
+                    .animation(.easeInOut(duration: 0.1), value: false)
                 }
             }
 

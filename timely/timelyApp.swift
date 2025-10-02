@@ -9,12 +9,12 @@ struct timelyApp: App {
                 .frame(width: 500)
                 .fixedSize(horizontal: false, vertical: true)
         } label: {
-            HStack(spacing: 4) {
-                Image(systemName: "clock.fill")
-                    .foregroundColor(.blue)
-                Text(" timely")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundColor(.blue)
+            if let menuIcon = NSImage(named: "MenuIcon") {
+                // Set the proper size on the NSImage itself
+                menuIcon.size = NSSize(width: 16, height: 16)
+                return Image(nsImage: menuIcon)
+            } else {
+                return Image(systemName: "clock")
             }
         }
         .menuBarExtraStyle(.window)
