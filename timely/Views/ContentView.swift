@@ -5,7 +5,7 @@ struct ContentView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("timely :)")
+            Text("timely")
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(
                     LinearGradient(
