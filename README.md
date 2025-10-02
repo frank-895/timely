@@ -28,7 +28,7 @@ A sleek macOS menu bar app for quick timezone conversions between cities around 
 
 timely is designed to be easy to install and update without the App Store.
 
-1. Go to the [Releases](https://github.com/yourusername/timely/releases) page.  
+1. Go to the [Releases](https://github.com/frank-895/timely/releases) page.  
 2. Download the `.zip` file for the latest version.  
 3. Unzip the file and drag `timely.app` into your Applications folder.  
 4. Launch timely — Sparkle will automatically check for future updates and notify you when a new version is available.  
