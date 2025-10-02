@@ -53,7 +53,8 @@ timely is designed to be easy to install and update without the App Store.
                 sparkle:version="1.1"
                 type="application/octet-stream"/>
    </item>
-```
+   ```
+
 6. Commit and push the updated appcast.xml to the main branch.
 
 Once this is done, **users running timely will automatically see and be able to install the new version**.
