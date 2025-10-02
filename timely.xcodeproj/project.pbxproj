@@ -19,6 +19,16 @@
 		EAFCC7D62E84702A00855819 /* timely.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = timely.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		EA89C1C02E8EDE6F00257635 /* Exceptions for "timely" folder in "timely" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = EAFCC7D52E84702A00855819 /* timely */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		EA89C1B02E8ED91600257635 /* Helper */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -27,6 +37,9 @@
 		};
 		EAFCC7D82E84702A00855819 /* timely */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				EA89C1C02E8EDE6F00257635 /* Exceptions for "timely" folder in "timely" target */,
+			);
 			path = timely;
 			sourceTree = "<group>";
 		};
@@ -399,6 +412,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = timely/Info.plist;
 				INFOPLIST_KEY_LSUIElement = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -443,6 +457,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = timely/Info.plist;
 				INFOPLIST_KEY_LSUIElement = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
