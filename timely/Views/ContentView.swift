@@ -22,15 +22,15 @@ struct ContentView: View {
                         inputState: viewModel.timeInput,
                         validationManager: viewModel.validationManager,
                         onTimeChanged: { timeString in
-                            // Handle time changes if needed for conversion logic later
-                            print("Time changed to: \(timeString)")
+                            // The conversion will be triggered automatically by the 
+                            // Combine publisher in setupTimeConversion()
                         }
                     )
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
 
                 VStack {
-                    Text("09:45")
+                    Text(viewModel.convertedTime)
                         .font(.system(size: 48, weight: .bold, design: .rounded))
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -43,10 +43,7 @@ struct ContentView: View {
                     filteredLocations: viewModel.filteredLocations1,
                     validationManager: viewModel.validationManager,
                     onLocationSelected: { location in
-                        // Defer the update to avoid publishing during view updates
-                        DispatchQueue.main.async {
-                            viewModel.selectedLocation1 = location
-                        }
+                        viewModel.selectedLocation1 = location
                     }
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -57,10 +54,7 @@ struct ContentView: View {
                     filteredLocations: viewModel.filteredLocations2,
                     validationManager: viewModel.validationManager,
                     onLocationSelected: { location in
-                        // Defer the update to avoid publishing during view updates
-                        DispatchQueue.main.async {
-                            viewModel.selectedLocation2 = location
-                        }
+                        viewModel.selectedLocation2 = location
                     }
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)

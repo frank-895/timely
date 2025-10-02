@@ -10,6 +10,8 @@ class TimeConverterViewModel: ObservableObject {
 
     @Published var filteredLocations1: [Location] = []
     @Published var filteredLocations2: [Location] = []
+    
+    @Published var convertedTime: String = "--:--"
 
     // Input validation manager
     let validationManager = InputValidationManager()
@@ -67,6 +69,7 @@ class TimeConverterViewModel: ObservableObject {
         loadCities()
         setupValidationBindings()
         setupFiltering()
+        setupTimeConversion()
     }
 
     private func loadCities() {
@@ -123,6 +126,13 @@ class TimeConverterViewModel: ObservableObject {
                 self.timeInput.currentValue = "12:00"
                 self.timeInput.lastValid = "12:00"
                 self.timeInput.needsValidation = false
+                
+                // Trigger initial conversion after setting defaults
+                self.updateConvertedTime(
+                    timeValue: "12:00", 
+                    fromLocation: self.selectedLocation1, 
+                    toLocation: self.selectedLocation2
+                )
             }
 
         } catch {
@@ -194,6 +204,82 @@ class TimeConverterViewModel: ObservableObject {
                 self?.filteredLocations2 = locations
             }
             .store(in: &cancellables)
+    }
+    
+    private func setupTimeConversion() {
+        // Combine all the inputs that should trigger conversion
+        Publishers.CombineLatest3(
+            timeInput.$currentValue,
+            $selectedLocation1,
+            $selectedLocation2
+        )
+        .debounce(for: .milliseconds(100), scheduler: RunLoop.main)
+        .sink { [weak self] timeValue, location1, location2 in
+            self?.updateConvertedTime(timeValue: timeValue, fromLocation: location1, toLocation: location2)
+        }
+        .store(in: &cancellables)
+    }
+    
+    private func updateConvertedTime(timeValue: String, fromLocation: Location?, toLocation: Location?) {
+        // Reset to default if any required data is missing
+        guard let fromLocation = fromLocation,
+              let toLocation = toLocation,
+              !timeValue.isEmpty,
+              Self.isValidTimeFormat(timeValue) else {
+            convertedTime = "--:--"
+            return
+        }
+        
+        // Convert the time
+        if let converted = convertTime(timeValue, from: fromLocation, to: toLocation) {
+            convertedTime = converted
+        } else {
+            convertedTime = "--:--"
+        }
+    }
+    
+    private func convertTime(_ timeString: String, from fromLocation: Location, to toLocation: Location) -> String? {
+        // Normalize the time string
+        guard let normalizedTime = Self.normalizeTimeFormat(timeString) else {
+            return nil
+        }
+        
+        // Parse the time components
+        let components = normalizedTime.split(separator: ":")
+        guard components.count == 2,
+              let hours = Int(components[0]),
+              let minutes = Int(components[1]) else {
+            return nil
+        }
+        
+        // Get current date
+        let calendar = Calendar.current
+        let today = Date()
+        
+        // Create timezone objects
+        guard let fromTimeZone = TimeZone(identifier: fromLocation.timezoneIdentifier),
+              let toTimeZone = TimeZone(identifier: toLocation.timezoneIdentifier) else {
+            return nil
+        }
+        
+        // Create date components for the time in the source timezone
+        var dateComponents = calendar.dateComponents([.year, .month, .day], from: today)
+        dateComponents.hour = hours
+        dateComponents.minute = minutes
+        dateComponents.second = 0
+        dateComponents.timeZone = fromTimeZone
+        
+        // Create the date in the source timezone
+        guard let sourceDate = calendar.date(from: dateComponents) else {
+            return nil
+        }
+        
+        // Convert to target timezone
+        let formatter = DateFormatter()
+        formatter.timeZone = toTimeZone
+        formatter.dateFormat = "HH:mm"
+        
+        return formatter.string(from: sourceDate)
     }
     
     /// Validates time format: accepts formats like "9:30", "09:30", "21:45"
