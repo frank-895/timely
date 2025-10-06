@@ -65,11 +65,18 @@ class TimeConverterViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let maxResults = 10
 
+    // UserDefaults keys for persistence
+    private let location1NameKey = "savedLocation1Name"
+    private let location1CountryKey = "savedLocation1Country"
+    private let location2NameKey = "savedLocation2Name"
+    private let location2CountryKey = "savedLocation2Country"
+
     init() {
         loadCities()
         setupValidationBindings()
         setupFiltering()
         setupTimeConversion()
+        setupLocationPersistence()
     }
 
     private func loadCities() {
@@ -92,30 +99,36 @@ class TimeConverterViewModel: ObservableObject {
             }
 
             self.allLocations = locations
-            
-            // Set default locations by directly setting the input state values
-            if let defaultLocation1 = locations.first(where: { $0.name.lowercased().contains("new york") }) ?? locations.first {
-                self.selectedLocation1 = defaultLocation1
-                let defaultText1 = "\(defaultLocation1.name), \(defaultLocation1.country)"
-                
-                // Set the default value directly on the input state with async dispatch
+
+            // Try to load saved locations first
+            let (savedLocation1, savedLocation2) = loadSavedLocations()
+
+            // Location 1: use saved if available, otherwise default to New York
+            let location1 = savedLocation1 ?? locations.first(where: { $0.name.lowercased().contains("new york") }) ?? locations.first
+            if let location1 = location1 {
+                self.selectedLocation1 = location1
+                let text1 = "\(location1.name), \(location1.country)"
+
+                // Set the value directly on the input state with async dispatch
                 _ = self.location1Input
                 DispatchQueue.main.async {
-                    self.location1Input.currentValue = defaultText1
-                    self.location1Input.lastValid = defaultText1
+                    self.location1Input.currentValue = text1
+                    self.location1Input.lastValid = text1
                     self.location1Input.needsValidation = false
                 }
             }
-            
-            if let defaultLocation2 = locations.first(where: { $0.name.lowercased().contains("london") }) ?? locations.dropFirst().first {
-                self.selectedLocation2 = defaultLocation2
-                let defaultText2 = "\(defaultLocation2.name), \(defaultLocation2.country)"
-                
-                // Set the default value directly on the input state with async dispatch
+
+            // Location 2: use saved if available, otherwise default to London
+            let location2 = savedLocation2 ?? locations.first(where: { $0.name.lowercased().contains("london") }) ?? locations.dropFirst().first
+            if let location2 = location2 {
+                self.selectedLocation2 = location2
+                let text2 = "\(location2.name), \(location2.country)"
+
+                // Set the value directly on the input state with async dispatch
                 _ = self.location2Input
                 DispatchQueue.main.async {
-                    self.location2Input.currentValue = defaultText2
-                    self.location2Input.lastValid = defaultText2
+                    self.location2Input.currentValue = text2
+                    self.location2Input.lastValid = text2
                     self.location2Input.needsValidation = false
                 }
             }
@@ -382,6 +395,67 @@ class TimeConverterViewModel: ObservableObject {
         timeInput.currentValue = currentTime
         timeInput.lastValid = currentTime
         timeInput.needsValidation = false
+    }
+
+    // MARK: - Location Persistence
+
+    /// Sets up auto-save for location changes
+    private func setupLocationPersistence() {
+        // Save location 1 whenever it changes
+        $selectedLocation1
+            .dropFirst() // Skip initial value
+            .sink { [weak self] location in
+                self?.saveLocation1(location)
+            }
+            .store(in: &cancellables)
+
+        // Save location 2 whenever it changes
+        $selectedLocation2
+            .dropFirst() // Skip initial value
+            .sink { [weak self] location in
+                self?.saveLocation2(location)
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Saves location 1 to UserDefaults
+    private func saveLocation1(_ location: Location?) {
+        if let location = location {
+            UserDefaults.standard.set(location.name, forKey: location1NameKey)
+            UserDefaults.standard.set(location.country, forKey: location1CountryKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: location1NameKey)
+            UserDefaults.standard.removeObject(forKey: location1CountryKey)
+        }
+    }
+
+    /// Saves location 2 to UserDefaults
+    private func saveLocation2(_ location: Location?) {
+        if let location = location {
+            UserDefaults.standard.set(location.name, forKey: location2NameKey)
+            UserDefaults.standard.set(location.country, forKey: location2CountryKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: location2NameKey)
+            UserDefaults.standard.removeObject(forKey: location2CountryKey)
+        }
+    }
+
+    /// Loads saved locations from UserDefaults
+    private func loadSavedLocations() -> (Location?, Location?) {
+        var savedLocation1: Location?
+        var savedLocation2: Location?
+
+        if let name1 = UserDefaults.standard.string(forKey: location1NameKey),
+           let country1 = UserDefaults.standard.string(forKey: location1CountryKey) {
+            savedLocation1 = allLocations.first { $0.name == name1 && $0.country == country1 }
+        }
+
+        if let name2 = UserDefaults.standard.string(forKey: location2NameKey),
+           let country2 = UserDefaults.standard.string(forKey: location2CountryKey) {
+            savedLocation2 = allLocations.first { $0.name == name2 && $0.country == country2 }
+        }
+
+        return (savedLocation1, savedLocation2)
     }
 }
 
