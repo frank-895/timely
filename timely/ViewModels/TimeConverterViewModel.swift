@@ -372,6 +372,17 @@ class TimeConverterViewModel: ObservableObject {
         location1Input.needsValidation = false
         location2Input.needsValidation = false
     }
+
+    /// Sets the time input to the current time
+    func setCurrentTime() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        let currentTime = formatter.string(from: Date())
+
+        timeInput.currentValue = currentTime
+        timeInput.lastValid = currentTime
+        timeInput.needsValidation = false
+    }
 }
 
 private struct RawCity: Codable {

@@ -64,14 +64,33 @@ struct ContentView: View {
 
             HStack(alignment: .top, spacing: 40) {
                 VStack {
-                    ValidatedTimeInputView(
-                        inputState: viewModel.timeInput,
-                        validationManager: viewModel.validationManager,
-                        onTimeChanged: { timeString in
-                            // The conversion will be triggered automatically by the 
-                            // Combine publisher in setupTimeConversion()
+                    HStack {
+                        ValidatedTimeInputView(
+                            inputState: viewModel.timeInput,
+                            validationManager: viewModel.validationManager,
+                            onTimeChanged: { timeString in
+                                // The conversion will be triggered automatically by the
+                                // Combine publisher in setupTimeConversion()
+                            }
+                        )
+
+                        Button(action: {
+                            viewModel.setCurrentTime()
+                        }) {
+                            Image(systemName: "clock.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(.blue)
                         }
-                    )
+                        .buttonStyle(.plain)
+                        .help("Set to current time")
+                        .onHover { isHovering in
+                            if isHovering {
+                                NSCursor.pointingHand.set()
+                            } else {
+                                NSCursor.arrow.set()
+                            }
+                        }
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
 
@@ -103,6 +122,13 @@ struct ContentView: View {
                 }
                 .buttonStyle(.plain)
                 .help("Swap locations")
+                .onHover { isHovering in
+                    if isHovering {
+                        NSCursor.pointingHand.set()
+                    } else {
+                        NSCursor.arrow.set()
+                    }
+                }
                 .padding(.top, 8)
 
                 ValidatedCityPickerView(
