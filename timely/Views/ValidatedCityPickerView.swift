@@ -150,14 +150,13 @@ struct ValidatedCityPickerView: View {
     }
     
     private func selectCity(_ city: Location) {
-        let cityText = "\(city.name), \(city.country)"
-
         // Defer all state changes to avoid publishing during view updates
         DispatchQueue.main.async {
             // Update the selectedLocation binding
             selectedLocation = city
 
             // Use validation manager's proper method for programmatic updates
+            let cityText = "\(city.name), \(city.country)"
             validationManager.setFieldValue(inputState.id, to: cityText)
 
             // Update UI state
