@@ -5,33 +5,47 @@ struct ValidatedTimeInputView: View {
     var validationManager: InputValidationManager
     var onTimeChanged: ((String) -> Void)?
 
-    @FocusState private var isTextFieldFocused: Bool
+    @FocusState private var focusedField: Field?
     @State private var hourText: String = ""
     @State private var minuteText: String = ""
+
+    enum Field {
+        case hour
+        case minute
+    }
 
     var body: some View {
         HStack(spacing: 4) {
             // Hour input
             TextField("00", text: $hourText)
-                .focused($isTextFieldFocused)
+                .focused($focusedField, equals: .hour)
                 .font(.system(size: 48, weight: .bold, design: .rounded))
                 .multilineTextAlignment(.center)
                 .frame(width: 80)
                 .onChange(of: hourText) { oldValue, newValue in
                     hourText = formatHourInput(newValue)
                     updateTimeString()
+
+                    // Auto-advance to minutes when complete
+                    if hourText.count == 2 {
+                        focusedField = .minute
+                    } else if hourText.count == 1, let digit = Int(hourText), digit >= 3 {
+                        // Single digit 3-9 can only be 03-09, so auto-advance
+                        focusedField = .minute
+                    }
                 }
                 .onTapGesture {
-                    isTextFieldFocused = true
+                    focusedField = .hour
                 }
-            
+
             // Colon separator
             Text(":")
                 .font(.system(size: 48, weight: .bold, design: .rounded))
                 .foregroundColor(.primary)
-            
-            // Minute input  
+
+            // Minute input
             TextField("00", text: $minuteText)
+                .focused($focusedField, equals: .minute)
                 .font(.system(size: 48, weight: .bold, design: .rounded))
                 .multilineTextAlignment(.center)
                 .frame(width: 80)
@@ -40,7 +54,7 @@ struct ValidatedTimeInputView: View {
                     updateTimeString()
                 }
                 .onTapGesture {
-                    isTextFieldFocused = true
+                    focusedField = .minute
                 }
         }
         .onHover { isHovered in
@@ -50,12 +64,12 @@ struct ValidatedTimeInputView: View {
                 NSCursor.arrow.set()
             }
         }
-        .onChange(of: isTextFieldFocused) { oldValue, newValue in
-            inputState.isFocused = newValue
+        .onChange(of: focusedField) { oldValue, newValue in
+            inputState.isFocused = newValue != nil
         }
         .onChange(of: inputState.currentValue) { oldValue, newValue in
             // Update local state when validation system changes the value
-            if !isTextFieldFocused {
+            if focusedField == nil {
                 parseTimeString(newValue)
             }
         }
