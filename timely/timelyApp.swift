@@ -12,9 +12,6 @@ struct timelyApp: App {
                 .fixedSize(horizontal: false, vertical: true)
         } label: {
             Image("MenuIcon")
-                .renderingMode(.template)     // let macOS tint + size it
-                .imageScale(.small)           // force proper menu bar scale
-                .font(.system(size: 14))      // an extra clamp (optional)
         }
         .menuBarExtraStyle(.window)
 
