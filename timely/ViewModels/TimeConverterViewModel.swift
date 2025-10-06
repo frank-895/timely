@@ -330,10 +330,10 @@ class TimeConverterViewModel: ObservableObject {
               let _ = Int(digits) else {
             return nil
         }
-        
+
         let hours: Int
         let minutes: Int
-        
+
         if digits.count == 3 {
             // Format: HMM -> H:MM
             hours = Int(String(digits.prefix(1))) ?? -1
@@ -343,12 +343,34 @@ class TimeConverterViewModel: ObservableObject {
             hours = Int(String(digits.prefix(2))) ?? -1
             minutes = Int(String(digits.suffix(2))) ?? -1
         }
-        
+
         guard hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59 else {
             return nil
         }
-        
+
         return String(format: "%02d:%02d", hours, minutes)
+    }
+
+    /// Swaps the two locations
+    func swapLocations() {
+        // Swap selected locations
+        let tempLocation = selectedLocation1
+        selectedLocation1 = selectedLocation2
+        selectedLocation2 = tempLocation
+
+        // Swap input field values
+        let tempInputValue = location1Input.currentValue
+        let tempLastValid = location1Input.lastValid
+
+        location1Input.currentValue = location2Input.currentValue
+        location1Input.lastValid = location2Input.lastValid
+
+        location2Input.currentValue = tempInputValue
+        location2Input.lastValid = tempLastValid
+
+        // Both inputs are valid after swap (they were valid before)
+        location1Input.needsValidation = false
+        location2Input.needsValidation = false
     }
 }
 

@@ -82,7 +82,7 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, alignment: .center)
             }
 
-            HStack(alignment: .top, spacing: 40) {
+            HStack(alignment: .top, spacing: 20) {
                 ValidatedCityPickerView(
                     selectedLocation: $viewModel.selectedLocation1,
                     inputState: viewModel.location1Input,
@@ -93,6 +93,17 @@ struct ContentView: View {
                     }
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
+
+                Button(action: {
+                    viewModel.swapLocations()
+                }) {
+                    Image(systemName: "arrow.left.arrow.right")
+                        .font(.system(size: 16))
+                        .foregroundColor(.blue)
+                }
+                .buttonStyle(.plain)
+                .help("Swap locations")
+                .padding(.top, 8)
 
                 ValidatedCityPickerView(
                     selectedLocation: $viewModel.selectedLocation2,
