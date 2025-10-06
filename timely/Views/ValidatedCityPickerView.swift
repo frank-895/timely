@@ -150,21 +150,24 @@ struct ValidatedCityPickerView: View {
     }
     
     private func selectCity(_ city: Location) {
-        // First, update the selectedLocation binding
-        selectedLocation = city
         let cityText = "\(city.name), \(city.country)"
-        
-        // Use validation manager's proper method for programmatic updates
-        validationManager.setFieldValue(inputState.id, to: cityText)
-        
-        // Defer UI state changes to avoid publishing during view updates
+
+        // Defer all state changes to avoid publishing during view updates
         DispatchQueue.main.async {
+            // Update the selectedLocation binding
+            selectedLocation = city
+
+            // Use validation manager's proper method for programmatic updates
+            validationManager.setFieldValue(inputState.id, to: cityText)
+
+            // Update UI state
             isExpanded = false
             selectedIndex = 0
             isTextFieldFocused = false
+
+            // Notify callback
+            onLocationSelected?(city)
         }
-        
-        onLocationSelected?(city)
     }
     
     private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
