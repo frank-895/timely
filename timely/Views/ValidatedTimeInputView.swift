@@ -24,14 +24,19 @@ struct ValidatedTimeInputView: View {
                 .frame(width: 80)
                 .onChange(of: hourText) { oldValue, newValue in
                     hourText = formatHourInput(newValue)
-                    updateTimeString()
 
-                    // Auto-advance to minutes when complete
-                    if hourText.count == 2 {
+                    // Auto-pad and advance for single digits 3-9
+                    if hourText.count == 1, let digit = Int(hourText), digit >= 3 {
+                        // Pad with leading zero (e.g., "9" -> "09")
+                        hourText = String(format: "%02d", digit)
+                        updateTimeString()
                         focusedField = .minute
-                    } else if hourText.count == 1, let digit = Int(hourText), digit >= 3 {
-                        // Single digit 3-9 can only be 03-09, so auto-advance
-                        focusedField = .minute
+                    } else {
+                        updateTimeString()
+                        // Auto-advance to minutes when 2 digits entered
+                        if hourText.count == 2 {
+                            focusedField = .minute
+                        }
                     }
                 }
                 .onTapGesture {
