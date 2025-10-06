@@ -75,6 +75,10 @@ struct ValidatedTimeInputView: View {
         }
         .onAppear {
             parseTimeString(inputState.currentValue)
+            // Auto-focus on hour field when view appears (with slight delay for macOS)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                focusedField = .hour
+            }
         }
     }
     
