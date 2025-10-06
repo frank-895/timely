@@ -74,14 +74,13 @@ struct ValidatedTimeInputView: View {
         }
         .onChange(of: inputState.currentValue) { oldValue, newValue in
             // Update local state when validation system changes the value
-            if focusedField == nil {
-                parseTimeString(newValue)
-            }
+            // Always update if not currently typing (focusedField will be set when typing)
+            parseTimeString(newValue)
         }
         .onAppear {
             parseTimeString(inputState.currentValue)
-            // Auto-focus on hour field when view appears (with slight delay for macOS)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            // Auto-focus on hour field when view appears (with delay to allow value to be set first)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                 focusedField = .hour
             }
         }

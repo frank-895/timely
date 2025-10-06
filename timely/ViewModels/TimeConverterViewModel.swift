@@ -18,9 +18,14 @@ class TimeConverterViewModel: ObservableObject {
     
     // Input states for validation
     lazy var timeInput: InputFieldState = {
-        validationManager.registerInput(
+        // Get current time as default
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        let currentTime = formatter.string(from: Date())
+
+        return validationManager.registerInput(
             id: "time",
-            defaultValue: "12:00",
+            defaultValue: currentTime,
             validationRule: { value in
                 // Time validation: must be in HH:mm format (24-hour)
                 return TimeConverter.isValidTimeFormat(value)
@@ -133,17 +138,14 @@ class TimeConverterViewModel: ObservableObject {
                 }
             }
             
-            // Initialize the time input with default value
+            // Initialize the time input (will use current time as default)
             _ = self.timeInput
+
             DispatchQueue.main.async {
-                self.timeInput.currentValue = "12:00"
-                self.timeInput.lastValid = "12:00"
-                self.timeInput.needsValidation = false
-                
                 // Trigger initial conversion after setting defaults
                 self.updateConvertedTime(
-                    timeValue: "12:00", 
-                    fromLocation: self.selectedLocation1, 
+                    timeValue: self.timeInput.currentValue,
+                    fromLocation: self.selectedLocation1,
                     toLocation: self.selectedLocation2
                 )
             }
