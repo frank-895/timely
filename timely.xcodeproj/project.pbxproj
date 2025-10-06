@@ -7,15 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EA89C1BC2E8EDC1E00257635 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = EA89C1BB2E8EDC1E00257635 /* Sparkle */; };
-		EA89C1BE2E8EDD9D00257635 /* appcast.xml in Resources */ = {isa = PBXBuildFile; fileRef = EA89C1BD2E8EDD9A00257635 /* appcast.xml */; };
 		EA8DB89F2E84992700CE1105 /* cities.json in Resources */ = {isa = PBXBuildFile; fileRef = EA8DB89E2E84992700CE1105 /* cities.json */; };
 		EAC47B952E8EF62500398461 /* LaunchAtLoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAC47B942E8EF62500398461 /* LaunchAtLoginManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		EA89C1AF2E8ED91600257635 /* Helper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Helper.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		EA89C1BD2E8EDD9A00257635 /* appcast.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = appcast.xml; sourceTree = "<group>"; };
 		EA8DB89E2E84992700CE1105 /* cities.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cities.json; sourceTree = "<group>"; };
 		EAC47B942E8EF62500398461 /* LaunchAtLoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginManager.swift; sourceTree = "<group>"; };
 		EAFCC7D62E84702A00855819 /* timely.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = timely.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -59,7 +56,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA89C1BC2E8EDC1E00257635 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,7 +65,6 @@
 		EA8DB89D2E84986C00CE1105 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				EA89C1BD2E8EDD9A00257635 /* appcast.xml */,
 				EA8DB89E2E84992700CE1105 /* cities.json */,
 			);
 			path = Resources;
@@ -137,7 +132,6 @@
 			);
 			name = timely;
 			packageProductDependencies = (
-				EA89C1BB2E8EDC1E00257635 /* Sparkle */,
 			);
 			productName = timely;
 			productReference = EAFCC7D62E84702A00855819 /* timely.app */;
@@ -171,7 +165,6 @@
 			mainGroup = EAFCC7CD2E84702A00855819;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				EA89C1BA2E8EDC1E00257635 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EAFCC7D72E84702A00855819 /* Products */;
@@ -197,7 +190,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA8DB89F2E84992700CE1105 /* cities.json in Resources */,
-				EA89C1BE2E8EDD9D00257635 /* appcast.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,25 +517,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		EA89C1BA2E8EDC1E00257635 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.8.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		EA89C1BB2E8EDC1E00257635 /* Sparkle */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EA89C1BA2E8EDC1E00257635 /* XCRemoteSwiftPackageReference "Sparkle" */;
-			productName = Sparkle;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EAFCC7CE2E84702A00855819 /* Project object */;
 }

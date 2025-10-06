@@ -1,15 +1,7 @@
 import SwiftUI
-import Sparkle
 
 @main
 struct timelyApp: App {
-    // Sparkle updater controller
-    let updaterController = SPUStandardUpdaterController(
-        startingUpdater: true,
-        updaterDelegate: nil,
-        userDriverDelegate: nil
-    )
-
     // Track whether the menu bar extra is inserted
     @State private var isMenuBarExtraInserted = true
 
