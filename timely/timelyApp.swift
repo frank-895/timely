@@ -15,5 +15,8 @@ struct timelyApp: App {
         }
         .menuBarExtraStyle(.window)
 
+        Settings {
+            SettingsView()
+        }
     }
 }

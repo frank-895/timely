@@ -4,6 +4,8 @@ struct ContentView: View {
     @StateObject private var viewModel = TimeConverterViewModel()
     @State private var isLicenseHovered = false
     @State private var isGitHubHovered = false
+    @State private var isSwapHovered = false
+    @State private var isClockHovered = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -84,7 +86,10 @@ struct ContentView: View {
                         .buttonStyle(.plain)
                         .help("Set to current time")
                         .onHover { isHovering in
-                            if isHovering {
+                            isClockHovered = isHovering
+                        }
+                        .onChange(of: isClockHovered) { _, newValue in
+                            if newValue {
                                 NSCursor.pointingHand.set()
                             } else {
                                 NSCursor.arrow.set()
@@ -123,7 +128,10 @@ struct ContentView: View {
                 .buttonStyle(.plain)
                 .help("Swap locations")
                 .onHover { isHovering in
-                    if isHovering {
+                    isSwapHovered = isHovering
+                }
+                .onChange(of: isSwapHovered) { _, newValue in
+                    if newValue {
                         NSCursor.pointingHand.set()
                     } else {
                         NSCursor.arrow.set()

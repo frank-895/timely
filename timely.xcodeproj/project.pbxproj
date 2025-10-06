@@ -8,13 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		EA8DB89F2E84992700CE1105 /* cities.json in Resources */ = {isa = PBXBuildFile; fileRef = EA8DB89E2E84992700CE1105 /* cities.json */; };
-		EAC47B952E8EF62500398461 /* LaunchAtLoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAC47B942E8EF62500398461 /* LaunchAtLoginManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		EA89C1AF2E8ED91600257635 /* Helper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Helper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA8DB89E2E84992700CE1105 /* cities.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cities.json; sourceTree = "<group>"; };
-		EAC47B942E8EF62500398461 /* LaunchAtLoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginManager.swift; sourceTree = "<group>"; };
 		EAFCC7D62E84702A00855819 /* timely.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = timely.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -77,7 +75,6 @@
 				EAFCC7D82E84702A00855819 /* timely */,
 				EA89C1B02E8ED91600257635 /* Helper */,
 				EAFCC7D72E84702A00855819 /* Products */,
-				EAC47B942E8EF62500398461 /* LaunchAtLoginManager.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -200,7 +197,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EAC47B952E8EF62500398461 /* LaunchAtLoginManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
