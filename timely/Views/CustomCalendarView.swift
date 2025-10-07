@@ -71,6 +71,7 @@ struct CustomCalendarView: View {
                             isCurrentMonth: calendar.isDate(date, equalTo: displayedMonth, toGranularity: .month)
                         ) {
                             selectedDate = date
+                            isPresented = false
                         }
                     } else {
                         Color.clear
@@ -86,6 +87,7 @@ struct CustomCalendarView: View {
                 Button("Today") {
                     selectedDate = Date()
                     displayedMonth = Date()
+                    isPresented = false
                 }
                 .buttonStyle(.borderless)
                 .onHover { isHovering in

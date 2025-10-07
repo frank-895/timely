@@ -13,6 +13,8 @@ class TimeConverterViewModel: ObservableObject {
 
     @Published var convertedTime: String = "--:--"
     @Published var selectedDate: Date = Date()
+    @Published var convertedDate: Date = Date()
+    @Published var convertedTimeZone: TimeZone = TimeZone.current
 
     // Input validation manager
     let validationManager = InputValidationManager()
@@ -245,14 +247,23 @@ class TimeConverterViewModel: ObservableObject {
               !timeValue.isEmpty,
               TimeConverter.isValidTimeFormat(timeValue) else {
             convertedTime = "--:--"
+            convertedDate = date
+            convertedTimeZone = TimeZone.current
             return
         }
 
+        // Set the target timezone
+        if let targetTimeZone = TimeZone(identifier: toLocation.timezoneIdentifier) {
+            convertedTimeZone = targetTimeZone
+        }
+
         // Convert the time using the selected date (important for DST)
-        if let converted = TimeConverter.convertTime(timeValue, from: fromLocation, to: toLocation, on: date) {
-            convertedTime = converted
+        if let result = TimeConverter.convertTimeWithDate(timeValue, from: fromLocation, to: toLocation, on: date) {
+            convertedTime = result.time
+            convertedDate = result.date
         } else {
             convertedTime = "--:--"
+            convertedDate = date
         }
     }
 

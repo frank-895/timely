@@ -121,4 +121,57 @@ struct TimeConverter {
 
         return formatter.string(from: sourceDate)
     }
+
+    /// Converts a time string and returns both the converted time and date
+    /// - Parameters:
+    ///   - timeString: Time in H:mm or HH:mm format
+    ///   - fromLocation: Source location with timezone
+    ///   - toLocation: Destination location with timezone
+    ///   - date: The date to use for conversion (important for DST)
+    /// - Returns: Tuple of (time: String, date: Date) or nil if conversion fails
+    static func convertTimeWithDate(_ timeString: String, from fromLocation: Location, to toLocation: Location, on date: Date = Date()) -> (time: String, date: Date)? {
+        // Normalize the time string
+        guard let normalizedTime = normalizeTimeFormat(timeString) else {
+            return nil
+        }
+
+        // Parse the time components
+        let components = normalizedTime.split(separator: ":")
+        guard components.count == 2,
+              let hours = Int(components[0]),
+              let minutes = Int(components[1]) else {
+            return nil
+        }
+
+        // Use the provided date
+        let calendar = Calendar.current
+
+        // Create timezone objects
+        guard let fromTimeZone = TimeZone(identifier: fromLocation.timezoneIdentifier),
+              let toTimeZone = TimeZone(identifier: toLocation.timezoneIdentifier) else {
+            return nil
+        }
+
+        // Create date components for the time in the source timezone
+        var dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+        dateComponents.hour = hours
+        dateComponents.minute = minutes
+        dateComponents.second = 0
+        dateComponents.timeZone = fromTimeZone
+
+        // Create the date in the source timezone
+        guard let sourceDate = calendar.date(from: dateComponents) else {
+            return nil
+        }
+
+        // Convert to target timezone and get the resulting date
+        let formatter = DateFormatter()
+        formatter.timeZone = toTimeZone
+        formatter.dateFormat = "HH:mm"
+        let timeString = formatter.string(from: sourceDate)
+
+        // sourceDate already represents the correct moment in time
+        // Just return it as-is - it will be formatted correctly in the target timezone
+        return (time: timeString, date: sourceDate)
+    }
 }

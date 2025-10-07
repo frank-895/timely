@@ -88,7 +88,11 @@ struct ContentView: View {
             }
 
             HStack(alignment: .top, spacing: 40) {
-                VStack {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(formattedDate(viewModel.selectedDate))
+                        .font(.system(size: 12, weight: .regular, design: .rounded))
+                        .foregroundColor(.secondary)
+
                     HStack {
                         ValidatedTimeInputView(
                             inputState: viewModel.timeInput,
@@ -146,9 +150,13 @@ struct ContentView: View {
                         }
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-                VStack {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(formattedDate(viewModel.convertedDate, timeZone: viewModel.convertedTimeZone))
+                        .font(.system(size: 12, weight: .regular, design: .rounded))
+                        .foregroundColor(.secondary)
+
                     Text(viewModel.convertedTime)
                         .font(.system(size: 48, weight: .bold, design: .rounded))
                 }
@@ -204,5 +212,18 @@ struct ContentView: View {
         }
         .padding(.horizontal, 20)
         .padding(.top, 20)
+    }
+
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE, MMM d, yyyy"
+        return formatter.string(from: date)
+    }
+
+    private func formattedDate(_ date: Date, timeZone: TimeZone) -> String {
+        let formatter = DateFormatter()
+        formatter.timeZone = timeZone
+        formatter.dateFormat = "EEEE, MMM d, yyyy"
+        return formatter.string(from: date)
     }
 }

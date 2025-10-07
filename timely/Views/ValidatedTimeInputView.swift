@@ -33,13 +33,12 @@ struct ValidatedTimeInputView: View {
                         hourText = String(format: "%02d", digit)
                         updateTimeString()
                         focusedField = .minute
-                    } else {
+                    } else if hourText.count == 2 {
+                        // Two digits entered - update and advance
                         updateTimeString()
-                        // Auto-advance to minutes when 2 digits entered
-                        if hourText.count == 2 {
-                            focusedField = .minute
-                        }
+                        focusedField = .minute
                     }
+                    // For single digit 0, 1, or 2 - don't update time string yet, wait for second digit
                     isUpdatingFromUser = false
                 }
                 .onTapGesture {
@@ -82,6 +81,14 @@ struct ValidatedTimeInputView: View {
         }
         .onChange(of: focusedField) { oldValue, newValue in
             inputState.isFocused = newValue != nil
+
+            // When leaving the hour field with a single digit, pad it
+            if oldValue == .hour && newValue != .hour && hourText.count == 1 {
+                if let digit = Int(hourText) {
+                    hourText = String(format: "%02d", digit)
+                    updateTimeString()
+                }
+            }
         }
         .onChange(of: inputState.currentValue) { oldValue, newValue in
             // Only sync from external changes when user is NOT actively typing
