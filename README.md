@@ -6,17 +6,33 @@ A sleek macOS menu bar app for quick timezone conversions between cities around 
 
 - 🌍 **Global Coverage** - Search from thousands of cities worldwide
 - ⚡ **Real-time Conversion** - Instant timezone calculations as you type
-- 🎯 **Smart Search** - Intelligent city name autocomplete
-- 🕐 **Current Date** - Uses today's date for accurate daylight saving time
+- 🎯 **Smart Search** - Intelligent city name autocomplete with scrollable results
+- 📅 **Date Picker** - Custom calendar for accurate DST calculations on any date
+- 🕐 **Smart Date Handling** - Automatically adjusts dates when times cross midnight
+- ⏰ **Current Time Button** - Instantly set to your current local time
 - 📝 **Flexible Input** - Accepts various time formats (9:30, 09:30, 930)
-- 🎨 **Clean Design** - Native macOS look and feel
+- 🔄 **Swap Locations** - Quick button to reverse source and destination
+- 🎨 **Modern Design** - Clean, rounded interface with smooth interactions
+- 🪟 **Menu Bar App** - Lives in your menu bar for quick access
 
 ## Usage 🚀
 
-1. Enter a time in the left field
+### Basic Time Conversion
+1. Enter a time in the left field (HH:mm format)
 2. Search and select your source city
 3. Search and select your destination city
 4. See the converted time instantly on the right
+
+### Advanced Features
+- **Date Selection**: Click the calendar icon to choose a specific date (important for DST accuracy)
+- **Current Time**: Click the clock icon to instantly set the current time
+- **Location Swap**: Click the swap arrows between cities to reverse the conversion
+- **Quick Quit**: Click the X in the top right to close the app
+
+### Smart Input
+- Type "1" then "0" for 10:00 (won't auto-complete to 01:00)
+- Backspace freely in minutes without fighting auto-fill
+- Fields always show valid time values
 
 ## Requirements 📋
 
