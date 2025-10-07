@@ -8,6 +8,7 @@ struct ValidatedTimeInputView: View {
     @FocusState private var focusedField: Field?
     @State private var hourText: String = ""
     @State private var minuteText: String = ""
+    @State private var isUpdatingFromUser: Bool = false
 
     enum Field {
         case hour
@@ -23,6 +24,7 @@ struct ValidatedTimeInputView: View {
                 .multilineTextAlignment(.center)
                 .frame(width: 80)
                 .onChange(of: hourText) { oldValue, newValue in
+                    isUpdatingFromUser = true
                     hourText = formatHourInput(newValue)
 
                     // Auto-pad and advance for single digits 3-9
@@ -38,6 +40,7 @@ struct ValidatedTimeInputView: View {
                             focusedField = .minute
                         }
                     }
+                    isUpdatingFromUser = false
                 }
                 .onTapGesture {
                     focusedField = .hour
@@ -55,8 +58,16 @@ struct ValidatedTimeInputView: View {
                 .multilineTextAlignment(.center)
                 .frame(width: 80)
                 .onChange(of: minuteText) { oldValue, newValue in
+                    isUpdatingFromUser = true
+
+                    // Detect backspace: going from non-empty to empty
+                    if !oldValue.isEmpty && newValue.isEmpty {
+                        focusedField = .hour
+                    }
+
                     minuteText = formatMinuteInput(newValue)
                     updateTimeString()
+                    isUpdatingFromUser = false
                 }
                 .onTapGesture {
                     focusedField = .minute
@@ -73,14 +84,15 @@ struct ValidatedTimeInputView: View {
             inputState.isFocused = newValue != nil
         }
         .onChange(of: inputState.currentValue) { oldValue, newValue in
-            // Update local state when validation system changes the value
-            // Always update if not currently typing (focusedField will be set when typing)
-            parseTimeString(newValue)
+            // Only sync from external changes when user is NOT actively typing
+            if !isUpdatingFromUser && focusedField == nil {
+                parseTimeString(newValue)
+            }
         }
         .onAppear {
             parseTimeString(inputState.currentValue)
-            // Auto-focus on hour field when view appears (with delay to allow value to be set first)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            // Auto-focus on hour field when view appears
+            DispatchQueue.main.async {
                 focusedField = .hour
             }
         }
@@ -121,13 +133,10 @@ struct ValidatedTimeInputView: View {
     private func updateTimeString() {
         let hour = hourText.isEmpty ? "00" : String(format: "%02d", Int(hourText) ?? 0)
         let minute = minuteText.isEmpty ? "00" : String(format: "%02d", Int(minuteText) ?? 0)
-        
+
         let timeString = "\(hour):\(minute)"
-        
-        DispatchQueue.main.async {
-            inputState.currentValue = timeString
-        }
-        
+        inputState.currentValue = timeString
+
         onTimeChanged?(timeString)
     }
     
