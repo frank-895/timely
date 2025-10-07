@@ -6,8 +6,8 @@ struct ValidatedTimeInputView: View {
     var onTimeChanged: ((String) -> Void)?
 
     @FocusState private var focusedField: Field?
-    @State private var hourText: String = ""
-    @State private var minuteText: String = ""
+    @State private var hourText: String = "00"
+    @State private var minuteText: String = "00"
     @State private var isUpdatingFromUser: Bool = false
 
     enum Field {
@@ -59,13 +59,21 @@ struct ValidatedTimeInputView: View {
                 .onChange(of: minuteText) { oldValue, newValue in
                     isUpdatingFromUser = true
 
-                    // Detect backspace: going from non-empty to empty
+                    // Detect backspace to empty - move back to hour
                     if !oldValue.isEmpty && newValue.isEmpty {
                         focusedField = .hour
+                        isUpdatingFromUser = false
+                        return
                     }
 
                     minuteText = formatMinuteInput(newValue)
-                    updateTimeString()
+
+                    // Only update time string when we have 2 digits or a valid minute
+                    if minuteText.count == 2 {
+                        updateTimeString()
+                    }
+                    // For single digit, wait for second digit before updating
+
                     isUpdatingFromUser = false
                 }
                 .onTapGesture {
@@ -86,6 +94,14 @@ struct ValidatedTimeInputView: View {
             if oldValue == .hour && newValue != .hour && hourText.count == 1 {
                 if let digit = Int(hourText) {
                     hourText = String(format: "%02d", digit)
+                    updateTimeString()
+                }
+            }
+
+            // When leaving the minute field with a single digit, pad it
+            if oldValue == .minute && newValue != .minute && minuteText.count == 1 {
+                if let digit = Int(minuteText) {
+                    minuteText = String(format: "%02d", digit)
                     updateTimeString()
                 }
             }
@@ -130,10 +146,13 @@ struct ValidatedTimeInputView: View {
         let number = Int(truncated) ?? 0
 
         // Clamp minutes to 0-59 range
-        if number > 59 {
+        // For 2-digit inputs, check if it exceeds 59
+        if truncated.count == 2 && number > 59 {
             return "59"
         }
 
+        // For single digit 6-9, they can only be first digit of valid minutes
+        // But allow them for now - validation happens when complete
         return truncated
     }
     
