@@ -139,31 +139,10 @@ struct ContentView: View {
                             }
                         }
                         .popover(isPresented: $showDatePicker, arrowEdge: .bottom) {
-                            VStack(spacing: 12) {
-                                DatePicker(
-                                    "",
-                                    selection: $viewModel.selectedDate,
-                                    displayedComponents: [.date]
-                                )
-                                .datePickerStyle(.graphical)
-                                .labelsHidden()
-
-                                HStack {
-                                    Button("Today") {
-                                        viewModel.selectedDate = Date()
-                                    }
-                                    .buttonStyle(.borderless)
-
-                                    Spacer()
-
-                                    Button("Close") {
-                                        showDatePicker = false
-                                    }
-                                    .buttonStyle(.borderedProminent)
-                                }
-                                .padding(.horizontal, 8)
-                            }
-                            .padding()
+                            CustomCalendarView(
+                                selectedDate: $viewModel.selectedDate,
+                                isPresented: $showDatePicker
+                            )
                         }
                     }
                 }
