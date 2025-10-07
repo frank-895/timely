@@ -7,33 +7,25 @@ typealias ValidationRule = (String) -> Bool
 /// Manages validation state for a single input field
 class InputFieldState: ObservableObject {
     let id: String
-    @Published var currentValue: String = "" {
-        didSet {
-            // Only mark validation needed if value actually changed and we're not initializing
-            if oldValue != currentValue && !oldValue.isEmpty {
-                // Defer the validation flag update to avoid publishing during view updates
-                DispatchQueue.main.async { [weak self] in
-                    self?.needsValidation = true
-                }
-            }
-        }
-    }
     @Published var lastValid: String = ""
     @Published var isFocused: Bool = false
     @Published var needsValidation: Bool = false
-    
+
     init(id: String, defaultValue: String = "") {
         self.id = id
         self.lastValid = defaultValue
         self.needsValidation = false
-        self.currentValue = defaultValue  // This will trigger didSet, but needsValidation is already false
+        self.currentValue = defaultValue
     }
-    
+
     /// Reset validation flag (used by manager when validation is complete)
     func markValidated() {
-        DispatchQueue.main.async { [weak self] in
-            self?.needsValidation = false
-        }
+        needsValidation = false
+    }
+
+    /// Mark that validation is needed (called by manager when value changes)
+    func setNeedsValidation() {
+        needsValidation = true
     }
 }
 
@@ -52,22 +44,35 @@ class InputValidationManager: ObservableObject {
         if let existing = inputStates[id] {
             return existing
         }
-        
+
         let inputState = InputFieldState(id: id, defaultValue: defaultValue)
         inputStates[id] = inputState
-        
+
         // Store custom validation rule if provided
         if let rule = validationRule {
             validationRules[id] = rule
         }
-        
+
         // Listen to focus changes
         inputState.$isFocused
             .sink { [weak self] isFocused in
                 self?.handleFocusChange(for: id, isFocused: isFocused)
             }
             .store(in: &cancellables)
-        
+
+        // Listen to value changes and mark validation as needed
+        inputState.$currentValue
+            .dropFirst() // Skip initial value
+            .removeDuplicates()
+            .sink { [weak inputState] _ in
+                guard let inputState = inputState else { return }
+                // Only mark as needing validation if the value has changed from lastValid
+                if inputState.currentValue != inputState.lastValid {
+                    inputState.setNeedsValidation()
+                }
+            }
+            .store(in: &cancellables)
+
         return inputState
     }
     

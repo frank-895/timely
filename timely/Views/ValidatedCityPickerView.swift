@@ -9,50 +9,44 @@ struct ValidatedCityPickerView: View {
 
     @State private var isExpanded = false
     @State private var selectedIndex = 0
-    @State private var debounceTimer: Timer?
     @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             textField
-            
+
             // Dropdown content that affects layout
             if isExpanded && !filteredLocations.isEmpty {
                 cityList
             }
         }
         .onChange(of: inputState.currentValue) {
-            // Cancel previous timer
-            debounceTimer?.invalidate()
-            
-            // Set new timer with small delay to prevent rapid changes
-            debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { _ in
-                updateExpansionState()
-            }
+            updateExpansionState()
         }
         .onChange(of: isTextFieldFocused) { oldValue, newValue in
             // Only update focus state, don't validate here
             // Validation happens in InputValidationManager with proper deferred timing
             inputState.isFocused = newValue
-            
+
             if newValue {
                 updateExpansionState()
             } else {
                 isExpanded = false
             }
         }
+        .onChange(of: filteredLocations) { oldValue, newValue in
+            // Update expansion state when filtered locations change
+            updateExpansionState()
+        }
     }
     
     private func updateExpansionState() {
-        let shouldExpand = !inputState.currentValue.isEmpty && 
-                          !isValidCompleteSelection() && 
+        let shouldExpand = !inputState.currentValue.isEmpty &&
+                          !isValidCompleteSelection() &&
                           isTextFieldFocused
-        
-        // Defer state updates to avoid publishing during view updates
-        DispatchQueue.main.async {
-            isExpanded = shouldExpand
-            selectedIndex = 0
-        }
+
+        isExpanded = shouldExpand
+        selectedIndex = 0
     }
     
     private func isValidCompleteSelection() -> Bool {
@@ -122,9 +116,7 @@ struct ValidatedCityPickerView: View {
             .background(isSelected ? Color.blue.opacity(0.2) : Color.gray.opacity(0.05))
             .onHover { isHovered in
                 if isHovered {
-                    DispatchQueue.main.async {
-                        selectedIndex = cityIndex // Update selection on hover
-                    }
+                    selectedIndex = cityIndex // Update selection on hover
                     NSCursor.pointingHand.set()
                 } else {
                     NSCursor.arrow.set()
@@ -150,23 +142,20 @@ struct ValidatedCityPickerView: View {
     }
     
     private func selectCity(_ city: Location) {
-        // Defer all state changes to avoid publishing during view updates
-        DispatchQueue.main.async {
-            // Update the selectedLocation binding
-            selectedLocation = city
+        // Update the selectedLocation binding
+        selectedLocation = city
 
-            // Use validation manager's proper method for programmatic updates
-            let cityText = "\(city.name), \(city.country)"
-            validationManager.setFieldValue(inputState.id, to: cityText)
+        // Use validation manager's proper method for programmatic updates
+        let cityText = "\(city.name), \(city.country)"
+        validationManager.setFieldValue(inputState.id, to: cityText)
 
-            // Update UI state
-            isExpanded = false
-            selectedIndex = 0
-            isTextFieldFocused = false
+        // Update UI state
+        isExpanded = false
+        selectedIndex = 0
+        isTextFieldFocused = false
 
-            // Notify callback
-            onLocationSelected?(city)
-        }
+        // Notify callback
+        onLocationSelected?(city)
     }
     
     private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
@@ -188,11 +177,9 @@ struct ValidatedCityPickerView: View {
             }
             return .handled
         case .escape:
-            DispatchQueue.main.async {
-                isExpanded = false
-                selectedIndex = 0
-                isTextFieldFocused = false
-            }
+            isExpanded = false
+            selectedIndex = 0
+            isTextFieldFocused = false
             return .handled
         default:
             return .ignored
