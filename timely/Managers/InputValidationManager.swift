@@ -7,6 +7,7 @@ typealias ValidationRule = (String) -> Bool
 /// Manages validation state for a single input field
 class InputFieldState: ObservableObject {
     let id: String
+    @Published var currentValue: String = ""
     @Published var lastValid: String = ""
     @Published var isFocused: Bool = false
     @Published var needsValidation: Bool = false
