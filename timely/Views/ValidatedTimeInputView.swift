@@ -85,7 +85,7 @@ struct ValidatedTimeInputView: View {
         }
         .onChange(of: inputState.currentValue) { oldValue, newValue in
             // Only sync from external changes when user is NOT actively typing
-            if !isUpdatingFromUser && focusedField == nil {
+            if !isUpdatingFromUser {
                 parseTimeString(newValue)
             }
         }

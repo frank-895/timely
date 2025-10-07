@@ -284,6 +284,9 @@ class TimeConverterViewModel: ObservableObject {
         formatter.dateFormat = "HH:mm"
         let currentTime = formatter.string(from: Date())
 
+        // Clear focus to allow the update to propagate
+        timeInput.isFocused = false
+
         timeInput.currentValue = currentTime
         timeInput.lastValid = currentTime
         timeInput.needsValidation = false
