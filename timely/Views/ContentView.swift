@@ -7,6 +7,8 @@ struct ContentView: View {
     @State private var isSwapHovered = false
     @State private var isClockHovered = false
     @State private var isQuitHovered = false
+    @State private var isCalendarHovered = false
+    @State private var showDatePicker = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -115,6 +117,53 @@ struct ContentView: View {
                             } else {
                                 NSCursor.arrow.set()
                             }
+                        }
+
+                        Button(action: {
+                            showDatePicker.toggle()
+                        }) {
+                            Image(systemName: "calendar")
+                                .font(.system(size: 14))
+                                .foregroundColor(.blue)
+                        }
+                        .buttonStyle(.plain)
+                        .help("Choose date")
+                        .onHover { isHovering in
+                            isCalendarHovered = isHovering
+                        }
+                        .onChange(of: isCalendarHovered) { _, newValue in
+                            if newValue {
+                                NSCursor.pointingHand.set()
+                            } else {
+                                NSCursor.arrow.set()
+                            }
+                        }
+                        .popover(isPresented: $showDatePicker, arrowEdge: .bottom) {
+                            VStack(spacing: 12) {
+                                DatePicker(
+                                    "",
+                                    selection: $viewModel.selectedDate,
+                                    displayedComponents: [.date]
+                                )
+                                .datePickerStyle(.graphical)
+                                .labelsHidden()
+
+                                HStack {
+                                    Button("Today") {
+                                        viewModel.selectedDate = Date()
+                                    }
+                                    .buttonStyle(.borderless)
+
+                                    Spacer()
+
+                                    Button("Close") {
+                                        showDatePicker = false
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                }
+                                .padding(.horizontal, 8)
+                            }
+                            .padding()
                         }
                     }
                 }

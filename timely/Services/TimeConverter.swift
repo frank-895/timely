@@ -77,8 +77,9 @@ struct TimeConverter {
     ///   - timeString: Time in H:mm or HH:mm format
     ///   - fromLocation: Source location with timezone
     ///   - toLocation: Destination location with timezone
+    ///   - date: The date to use for conversion (important for DST)
     /// - Returns: Converted time in HH:mm format, or nil if conversion fails
-    static func convertTime(_ timeString: String, from fromLocation: Location, to toLocation: Location) -> String? {
+    static func convertTime(_ timeString: String, from fromLocation: Location, to toLocation: Location, on date: Date = Date()) -> String? {
         // Normalize the time string
         guard let normalizedTime = normalizeTimeFormat(timeString) else {
             return nil
@@ -92,9 +93,8 @@ struct TimeConverter {
             return nil
         }
 
-        // Get current date
+        // Use the provided date
         let calendar = Calendar.current
-        let today = Date()
 
         // Create timezone objects
         guard let fromTimeZone = TimeZone(identifier: fromLocation.timezoneIdentifier),
@@ -103,7 +103,7 @@ struct TimeConverter {
         }
 
         // Create date components for the time in the source timezone
-        var dateComponents = calendar.dateComponents([.year, .month, .day], from: today)
+        var dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
         dateComponents.hour = hours
         dateComponents.minute = minutes
         dateComponents.second = 0

@@ -10,8 +10,9 @@ class TimeConverterViewModel: ObservableObject {
 
     @Published var filteredLocations1: [Location] = []
     @Published var filteredLocations2: [Location] = []
-    
+
     @Published var convertedTime: String = "--:--"
+    @Published var selectedDate: Date = Date()
 
     // Input validation manager
     let validationManager = InputValidationManager()
@@ -146,7 +147,8 @@ class TimeConverterViewModel: ObservableObject {
                 self.updateConvertedTime(
                     timeValue: self.timeInput.currentValue,
                     fromLocation: self.selectedLocation1,
-                    toLocation: self.selectedLocation2
+                    toLocation: self.selectedLocation2,
+                    date: self.selectedDate
                 )
             }
 
@@ -223,19 +225,20 @@ class TimeConverterViewModel: ObservableObject {
     
     private func setupTimeConversion() {
         // Combine all the inputs that should trigger conversion
-        Publishers.CombineLatest3(
+        Publishers.CombineLatest4(
             timeInput.$currentValue,
             $selectedLocation1,
-            $selectedLocation2
+            $selectedLocation2,
+            $selectedDate
         )
         .debounce(for: .milliseconds(100), scheduler: RunLoop.main)
-        .sink { [weak self] timeValue, location1, location2 in
-            self?.updateConvertedTime(timeValue: timeValue, fromLocation: location1, toLocation: location2)
+        .sink { [weak self] timeValue, location1, location2, date in
+            self?.updateConvertedTime(timeValue: timeValue, fromLocation: location1, toLocation: location2, date: date)
         }
         .store(in: &cancellables)
     }
     
-    private func updateConvertedTime(timeValue: String, fromLocation: Location?, toLocation: Location?) {
+    private func updateConvertedTime(timeValue: String, fromLocation: Location?, toLocation: Location?, date: Date) {
         // Reset to default if any required data is missing
         guard let fromLocation = fromLocation,
               let toLocation = toLocation,
@@ -245,8 +248,8 @@ class TimeConverterViewModel: ObservableObject {
             return
         }
 
-        // Convert the time
-        if let converted = TimeConverter.convertTime(timeValue, from: fromLocation, to: toLocation) {
+        // Convert the time using the selected date (important for DST)
+        if let converted = TimeConverter.convertTime(timeValue, from: fromLocation, to: toLocation, on: date) {
             convertedTime = converted
         } else {
             convertedTime = "--:--"
