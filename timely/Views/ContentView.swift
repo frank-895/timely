@@ -6,6 +6,7 @@ struct ContentView: View {
     @State private var isGitHubHovered = false
     @State private var isSwapHovered = false
     @State private var isClockHovered = false
+    @State private var isQuitHovered = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -61,6 +62,26 @@ struct ContentView: View {
                     }
                     .scaleEffect(1.0)
                     .animation(.easeInOut(duration: 0.1), value: false)
+
+                    Button(action: {
+                        NSApplication.shared.terminate(nil)
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Quit")
+                    .onHover { isHovering in
+                        isQuitHovered = isHovering
+                    }
+                    .onChange(of: isQuitHovered) { _, newValue in
+                        if newValue {
+                            NSCursor.pointingHand.set()
+                        } else {
+                            NSCursor.arrow.set()
+                        }
+                    }
                 }
             }
 
